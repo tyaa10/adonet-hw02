@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 using NickBuhro.Translit;
 
@@ -25,8 +26,14 @@ namespace first
                     string admin = "AdminTest";
                     string km = "KontentMenagerTest";
                     SqlCommand initInsertRole = connection.CreateCommand();
+                    // создание объекта-обертки для параметра запроса
+                    SqlParameter firstInsertParam = new SqlParameter("@nameUser", SqlDbType.VarChar);
+                    // копирование значения в обертку параметра
+                    firstInsertParam.Value = user;
+                    // указание, где в строке запроса будут вставлены значения параметров
                     initInsertRole.CommandText =
-                        "INSERT INTO [dbo].[Roles] ([name]) VALUES ('"+ user+"'), ('"+admin+"'), (N'"+km+"');";
+                        "INSERT INTO [dbo].[Roles] ([name]) VALUES ('@nameUser'), ('"+admin+"'), (N'"+km+"');";
+                    initInsertRole.Parameters.Add(firstInsertParam);
                     int insertedRoleCount = initInsertRole.ExecuteNonQuery();
                     Console.WriteLine($"Total inserted row count: {insertedRoleCount}");
                 }
