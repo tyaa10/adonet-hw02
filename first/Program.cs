@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using NickBuhro.Translit;
+using Microsoft.Extensions.Configuration;
 
 namespace first
 {
@@ -9,8 +11,9 @@ namespace first
     {
         static void Main(string[] args)
         {
+            string connectionString = ReadConnectionString();
             using (SqlConnection connection =
-                new SqlConnection(@"Data Source=localhost,1433\sql1;Initial Catalog=demo2021;User ID=sa;Password=Passw0rd%"))
+                new SqlConnection(connectionString))
                 // new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=demo2021;Integrated Security=True"))
             {
                 connection.Open();
@@ -68,6 +71,16 @@ namespace first
                     }
                 }
             }
+        }
+        
+        private static string ReadConnectionString()
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false);
+
+            IConfiguration config = builder.Build();
+            return config.GetSection("ConnectionStrings").GetSection("sql1").Value;
         }
     }
 }
